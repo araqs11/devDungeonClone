@@ -1,0 +1,64 @@
+plugins {
+    id 'java-library'
+}
+
+
+dependencies {
+    // LibGDX: expose this API to users because of core.level.elements.ILevel
+    api supportDependencies.gdx
+    api supportDependencies.gdx_platform
+    api supportDependencies.gdx_backend_lwjgl3
+    api supportDependencies.gdx_lwjgl3_glfw_awt_macos
+    api supportDependencies.gdx_ai
+    api supportDependencies.gdx_freetype
+    api supportDependencies.gdx_freetype_platform
+    api supportDependencies.gdx_backend_headless
+
+    // Netty for server-client communication
+    implementation supportDependencies.netty_all
+
+    // JUnit and Mockito for testing
+    testImplementation supportDependencies.junit
+    testImplementation supportDependencies.junitLauncher
+    testRuntimeOnly supportDependencies.junitLauncher
+    testImplementation supportDependencies.mockito_core
+    testImplementation "com.badlogicgames.gdx:gdx-backend-lwjgl:1.14.0"
+    testImplementation("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
+    testImplementation("com.badlogicgames.gdx:gdx:$gdxVersion")
+}
+
+
+sourceSets.main.java.srcDirs = ['src/']
+sourceSets.main.resources.srcDirs = ['assets/']
+
+sourceSets.test.java.srcDirs = ['test/']
+sourceSets.test.resources.srcDirs = ['test_assets/']
+
+tasks.register('runBasicStarter', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.BasicStarter'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('debugBasicStarter', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.BasicStarter'
+    classpath = sourceSets.main.runtimeClasspath
+    debug = true
+}
+
+tasks.register('runMPServer', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.MultiplayerServer'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('runMPClient', JavaExec) {
+    group 'starter'
+    mainClass = 'starter.MultiplayerClient'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
