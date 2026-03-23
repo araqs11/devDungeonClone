@@ -38,10 +38,6 @@ import systems.*;
  * <p>Usage: run with the Gradle task {@code runDevDungeon}.
  */
 public class DevDungeon {
-  private static final String BACKGROUND_MUSIC = "sounds/background.wav";
-  private static final boolean ENABLE_CHEATS = false;
-  private static final int START_LEVEL = ENABLE_CHEATS ? 5 : 0;
-
   /**
    * Main method to start the game.
    *
@@ -77,13 +73,6 @@ public class DevDungeon {
     Game.add(hero);
   }
 
-  private static void setupMusic() {
-    Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(BACKGROUND_MUSIC));
-    backgroundMusic.setLooping(true);
-    backgroundMusic.play();
-    backgroundMusic.setVolume(.05f);
-  }
-
   private static void configGame() throws IOException {
     Game.loadConfig(
         new SimpleIPath("dungeon_config.json"),
@@ -110,55 +99,5 @@ public class DevDungeon {
     Game.add(new CollisionSystem());
     Game.add(new HealthSystem());
     Game.add(new HealthBarSystem());
-  }
-
-  private static void enableCheats() {
-    Game.add(
-        new System() {
-          @Override
-          public void execute() {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_1)) {
-              Game.player()
-                  .orElseThrow()
-                  .fetch(InventoryComponent.class)
-                  .orElseThrow()
-                  .add(new ItemPotionHealth(HealthPotionType.GREATER));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_2)) {
-              DamageProjectileSkill skill =
-                  (DamageProjectileSkill)
-                      Game.player()
-                          .orElseThrow()
-                          .fetch(SkillComponent.class)
-                          .orElseThrow()
-                          .activeSkill()
-                          .orElseThrow();
-
-              if (skill.damageAmount() <= 2) {
-                skill.damageAmount(6);
-              } else {
-                skill.damageAmount(2);
-              }
-              DialogUtils.showTextPopup(
-                  "Fireball damage set to " + BurningFireballSkill.DAMAGE_AMOUNT,
-                  "Cheat: Fireball Damage");
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_3)) {
-              Debugger.TELEPORT_TO_END();
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_4)) {
-              FallingSystem.DEBUG_DONT_KILL = !FallingSystem.DEBUG_DONT_KILL;
-              DialogUtils.showTextPopup(
-                  "Falling damage is now "
-                      + (FallingSystem.DEBUG_DONT_KILL ? "disabled" : "enabled"),
-                  "Cheat: Falling Damage");
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_5)) {
-              Debugger.TELEPORT_TO_CURSOR();
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_6)) {
-              Game.player()
-                  .orElseThrow()
-                  .fetch(SkillComponent.class)
-                  .orElseThrow()
-                  .addSkill(new BurningFireballSkill(SkillTools::cursorPositionAsPoint));
-            }
-          }
-        });
   }
 }
